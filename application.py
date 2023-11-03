@@ -132,24 +132,24 @@ def grammar_test_ko(text):
         data = response.text.split('data = [', 1)[-1].rsplit('];', 1)[0]
 
         
-        #try:
-        data = json.loads(data)
-        # 교정 내용 담기
-        for i in range(len(data['errInfo'])):
-            correct_text=data['errInfo'][i]['candWord'].split('|')[0]
-            if correct_text == "":
-                continue
-            notcorrect=data['errInfo'][i]['orgStr']
+        try:
+            data = json.loads(data)
+            # 교정 내용 담기
+            for i in range(len(data['errInfo'])):
+                correct_text=data['errInfo'][i]['candWord'].split('|')[0]
+                if correct_text == "":
+                    continue
+                notcorrect=data['errInfo'][i]['orgStr']
 
-            # 기존 내용 -> 교정 내용 change
-            text = text.replace(notcorrect, correct_text)
-            origin_text = notcorrect+' → '+correct_text
-            change_list.append(origin_text)
+                # 기존 내용 -> 교정 내용 change
+                text = text.replace(notcorrect, correct_text)
+                origin_text = notcorrect+' → '+correct_text
+                change_list.append(origin_text)
 
-        change_list.append(text)
-        return change_list
+            change_list.append(text)
+            return change_list
 
-        '''
+    
         except:
             print(">> except <<")
             change_list.append(res)
@@ -158,7 +158,7 @@ def grammar_test_ko(text):
             print(change_list)
             print("함수 끝")
             return change_list
-        '''
+        
 
         
 #영어 맞춤법 검사
@@ -331,7 +331,9 @@ def getInput():
             if input_language == 'kor' or input_language == 'korb':
                 if input_language == 'korb':
                     result = BrailleToKor().translation(result) # 한글 점자 번역
+                    
                     grammar_before_result = result
+                
                 if grammar_check == "grammar":
                     #result2=result
                     grammar_before_result = result #추가함
@@ -356,6 +358,7 @@ def getInput():
                 # 출력이 한글 점자이면
                 if output_language == 'korb':
                     result = KorToBraille().korTranslate(result)
+                    result = louis.translateString(["braille-patterns.cti", "en-us-g2.ctb"], result)
                 # 출력이 한글 문자이면
                 elif output_language == 'kor':
                     print("음성 링크 반환")
@@ -399,7 +402,10 @@ def getInput():
                 
                 # 출력이 영어 문자이면
                 if output_language == 'eng':
-                    audio_file_path = tts_en(result) # 음성 변환
+                    try:
+                        audio_file_path = tts_en(result) # 음성 변환
+                    except:
+                        flash("텍스트를 확인해주세요!")
                 # 출력이 영어 점자이면
                 elif output_language == 'engb':
                     result = louis.translateString(["braille-patterns.cti", "en-us-g2.ctb"], result)
@@ -416,7 +422,10 @@ def getInput():
                         flash("텍스트를 다시 확인해주세요!")
                         return render_template("getInput.html")
                     if output_language == 'kor':
-                        audio_file_path = tts_ko(result) # 음성 변환
+                        try:
+                            audio_file_path = tts_ko(result) # 음성 변환
+                        except:
+                            flash("텍스트를 확인해주세요!")
                     elif output_language == 'korb':
                         result = KorToBraille().korTranslate(result)
         
