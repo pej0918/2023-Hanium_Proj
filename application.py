@@ -506,8 +506,8 @@ def Summary():
     audio_file_path=None
 
     #뉴스 기사로 사전 학습된 모델 이용
-    tokenizer=PreTrainedTokenizerFast.from_pretrained("ainize/kobart-news").to(device0)
-    model=BartForConditionalGeneration.from_pretrained("ainize/kobart-news").to(device0)
+    tokenizer=PreTrainedTokenizerFast.from_pretrained("ainize/kobart-news")
+    model=BartForConditionalGeneration.from_pretrained("ainize/kobart-news")
     
     if request.method == 'POST':
         text=request.form["text_input"]
