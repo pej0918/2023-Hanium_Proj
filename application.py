@@ -50,7 +50,7 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-import aspose.pdf as ap
+#import aspose.pdf as ap
 
 
 application = Flask(__name__)
