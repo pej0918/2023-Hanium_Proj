@@ -12,6 +12,8 @@ import transformers
      
 from transformers import PreTrainedTokenizerFast, BartForConditionalGeneration
 
+device0 = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
+
 #워드파일
 # 가장 기본적인 기능(문서 열기, 저장, 글자 쓰기 등등)
 import docx
@@ -50,9 +52,6 @@ from reportlab.pdfgen import canvas
 from reportlab.pdfbase import pdfmetrics
 from reportlab.pdfbase.ttfonts import TTFont
 
-#import aspose.pdf as ap
-
-
 application = Flask(__name__)
 
 
@@ -71,7 +70,6 @@ def set_response_headers(response):
 @application.route("/")
 def index():
     return render_template("index.html")
-    #return redirect(url_for("index"))
     
 #Guide 페이지
 @application.route("/Guide")
@@ -84,13 +82,10 @@ def translateSelect():
     file = 'static/result_pdf/result.docx'
     if os.path.isfile(file):
         os.remove(file)
-        print('result 파일 삭제')
-        
         
     file = 'static/upload_pdf/upload.pdf'
     if os.path.isfile(file):
         os.remove(file)
-        print('upload 파일 삭제')
         
     if request.method == 'POST':
         input_language = request.form['input_check']
@@ -101,14 +96,6 @@ def translateSelect():
         session['input_language'] = input_language
         session['output_language'] = output_language
         session['grammar_check'] = grammar_check
-
-        print("입력 언어: " + str(input_language))
-        print("출력 언어: " + str(output_language))
-
-        if grammar_check:
-            print("맞춤법 검사 O")
-        else:
-            print("맞춤법 검사 X")
 
         return redirect("getInput")
     return render_template("Translate.html")
@@ -151,12 +138,8 @@ def grammar_test_ko(text):
 
     
         except:
-            print(">> except <<")
             change_list.append(res)
             change_list.append(text)
-            print("change_list")
-            print(change_list)
-            print("함수 끝")
             return change_list
         
 
@@ -170,11 +153,9 @@ def grammar_test_en(text):
     notcorrect=None
     change_list=[]
     res='잘못된 내용이 없습니다.'
-    #spell=Speller('en')
+    
     if request.method == 'POST':
-        #영어 철자 교정 : beacuse i love you. -> because i love you.
-        #text=str(spell(text))
-        #text = translateLanguage(text, 'en', 'ko')
+        
         # 맞춤법 검사 요청 (requests) -> API요청
         response = requests.post('http://164.125.7.61/speller/results', data={'text1': text})
         # 응답에서 필요한 내용 추출 (html 파싱)
@@ -191,10 +172,10 @@ def grammar_test_en(text):
                 # 기존 내용 -> 교정 내용 change
                 text=text.replace(notcorrect,correct_text)
                 text = translateLanguage(text,'ko','en')
-                print(text)
+                
                 origin_text=notcorrect + '->' + correct_text
                 change_list.append(origin_text)
-                print(change_list)
+                
             change_list.append(text)
             return change_list
         except:
@@ -206,46 +187,9 @@ def grammar_test_en(text):
 
 
 # 번역
-papago_id = ["ucWN1NYU3VpbYcuxAKTq", "WDabw3tOaJ92cdsSOYBM", "67yLJrqrEgQHP97YkARL", "feWB1xtcxXfcnQIS6jAk", "jmdG3jgZeQ53a68yvQp8", "UFrU8d7ZE24fIn2gSpPq", "gwcICX3GYHAfBEBSYAPm"]
-papago_pw = ["2Rw4DKSIMU", "btRTA8My7I", "EZribMG0TN", "Uc7xjfpnMc", "hw2s53SeH9", "2Rw4DKSIMU", "dz9DZejpM0"]
-
-###papago_idx = 0
 
 def translateLanguage(text, lan1, lan2):
     trans_data = None
-    '''
-    data = {'text': text, 'source': lan1, 'target': lan2}
-    url = "https://openapi.naver.com/v1/papago/n2mt"
-    global papago_id
-    global papago_pw
-    global papago_idx
-
-    header = {"X-Naver-Client-Id": papago_id[papago_idx],
-              "X-Naver-Client-Secret": papago_pw[papago_idx]}
-    try:
-        response = requests.post(url, headers=header, data=data)
-        rescode = response.status_code
-
-        if(rescode == 200):
-            send_data = response.json()
-        trans_data = (send_data['message']['result']['translatedText'])
-    except:
-        papago_idx += 1
-        header = {"X-Naver-Client-Id": papago_id[papago_idx],
-              "X-Naver-Client-Secret": papago_pw[papago_idx]}
-        
-        if (papago_idx >= len(papago_id)):
-            papago_idx = 0
-        response = requests.post(url, headers=header, data=data)
-        rescode = response.status_code
-
-        if(rescode == 200):
-            send_data = response.json()
-            trans_data = (send_data['message']['result']['translatedText'])
-        else:
-            print("Error Code:", rescode)
-            return -10000
-            '''
     translator = googletrans.Translator()
     result_trans = translator.translate(text, dest=lan2)
     trans_data = result_trans.text
@@ -338,23 +282,17 @@ def getInput():
                     #result2=result
                     grammar_before_result = result #추가함
                     result = grammar_test_ko(str(result)) # 한글 맞춤법 검사
-                    print("################################\n")
-                    print("바뀐 텍스트: "+ str(result[-1]))
-                    print("################################")
+
                     change_result=result[:-1]
                     result=str(result[-1])
                     grammar_result = result
                     
-                    print(grammar_result)
-                    #change_result= grammar_test_ko(result2)
                     change_result="<br> ▪ ".join(change_result)
-                    print(change_result)
                     pattern = re.compile('[^a-zA-Z가-힣\s]')
                     cleaned_text = re.sub(pattern, '', result)
                     if cleaned_text == "":
                         flash("텍스트를 확인해주세요!")
                         return render_template("getInput.html")
-                    print('맞춤법 비교 결과 GET')
                 # 출력이 한글 점자이면
                 if output_language == 'korb':
                     result = KorToBraille().korTranslate(result)
@@ -378,22 +316,19 @@ def getInput():
                 if input_language == 'engb':
                     result =  louis.backTranslateString(["braille-patterns.cti", "en-us-g2.ctb"], result) # 영어 점자 번역
                     grammar_before_result = result
-                    print("문법교정 전"+grammar_before_result)
+                    
                 if grammar_check:
                     #result2=result
                     grammar_before_result = result #추가함
                     result = grammar_test_en(result)# 영어 맞춤법 검사
-                    print(result)
+                    
                     change_result=result[:-1]
                     result=str(result[-1])
                     grammar_result = result
-                    #change_result=grammar_test_en(result2)
                     change_result="<br> ▪ ".join(change_result)
-                    print(change_result)
                     pattern = re.compile('[^a-zA-Z가-힣\s]')
                     cleaned_text = re.sub(pattern, '', result)
                     
-                    print("cleaned_text: " + cleaned_text)
                     if cleaned_text == "":
                         flash("텍스트를 확인해주세요!")
                         return render_template("getInput.html")
@@ -411,7 +346,7 @@ def getInput():
                     result = louis.translateString(["braille-patterns.cti", "en-us-g2.ctb"], result)
  
                 # 출력이 한글 문자 or 한글 점자이면
-                else:    
+                else:
                     result = translateLanguage(result, 'ko', 'en')
                     if result == -10000:
                         flash("텍스트를 다시 확인해주세요!")
@@ -429,16 +364,12 @@ def getInput():
                     elif output_language == 'korb':
                         result = KorToBraille().korTranslate(result)
         
-        #print("grammar_before_result:" + grammar_before_result)
-        
         return redirect(url_for("result", result=result, total_result=result, grammar_result=grammar_result, grammar_before_result=grammar_before_result, compare_result=change_result, pdf_file_path=pdf_file_path, audio_file_path=audio_file_path, input_language=input_language, output_language=output_language, text_input=text_input))
     return render_template("getInput.html")
 
 
 
-#UPLOAD_FOLDER = os.getcwd() +'/upload' # 절대 파일 경로
 UPLOAD_FOLDER = 'static/upload_pdf'
-#DOWN_FOLDER=os.getcwd()+'/result'
 DOWN_FOLDER = 'static/result_pdf'
 ALLOWED_EXTENSIONS = set(['pdf'])
 
@@ -464,22 +395,7 @@ def result():
     if change_result != None:
         change_result = "▪ " + change_result
     
-    print("result 페이지 실행")
-
-
-    '''
-    filename=re.sub(r"[^\uAC00-\uD7A30-9a-zA-Z\s]", "d",result_value[:10])
-    filename = filename+'.pdf'
-    filepathtosave = os.path.join(DOWN_FOLDER,filename)
-    filepathtosave=filepathtosave.replace('.pdf','.docx')
-    '''
     filepathtosave = 'static/result_pdf/result.docx'
-
-    #pdf=canvas.Canvas(filepathtosave)
-    #pdf.drawString(50, 800, result_value)
-    #print(result_value)
-    #pdf.save()
-    #outputFile=filepathtosave
 
     doc = docx.Document()
     para = doc.add_paragraph()
@@ -487,51 +403,7 @@ def result():
     run.font.name = '맑은 고딕'
     run._element.rPr.rFonts.set(qn('w:eastAsia'), '맑은 고딕')
     doc.save(filepathtosave)
-
-    print(result_value)
-    #doc.add_paragraph(result_value)
-
-    #convert(filepathtosave, outputFile)
-    print('업로드 완료')
-    print(filepathtosave)
     return render_template("result_forcheck.html", result=result_value, total_result=result, grammar_before_result=grammar_before_result, grammar_result=grammar_result, compare_result=change_result, pdf_file_path=filepathtosave, audio_file_path=audio_file_path, input_language=input_language, output_language=output_language, text_input=text_input)
-
-
-
-
-'''
-
-@application.route("/compare", methods=['GET', 'POST'])
-def compare():
-    print("비교 시작")
-    compare_result=None
-    result = None
-    
-    #if request.method == 'POST':
-    text_input = request.form.get('text_input')
-    text_input = str(text_input)
-    language_input = request.form.get('input_language')
-    language_input = str(language_input)
-        
-    #입력 언어가 한국이면 
-    if language_input=='kor' or language_input=='korb':
-        print("한글")
-        result = str(grammar_test_ko(text_input))
-        print(result)
-        compare_result = result[:-1]
-        print(compare_result)
-        result = result[-1]
-    else: #영어이면
-        print("영어")
-        result = str(grammar_test_en(text_input))
-        compare_result = result[:-1]
-        result = result[-1]
-    
-    return render_template("compare.html", text_input=text_input, result=result,compare_result=compare_result)
-
-
-'''                    
-
 
 
 @application.route("/Summary_choose2", methods=['GET','POST'])
@@ -634,8 +506,8 @@ def Summary():
     audio_file_path=None
 
     #뉴스 기사로 사전 학습된 모델 이용
-    tokenizer=PreTrainedTokenizerFast.from_pretrained("ainize/kobart-news")
-    model=BartForConditionalGeneration.from_pretrained("ainize/kobart-news")
+    tokenizer=PreTrainedTokenizerFast.from_pretrained("ainize/kobart-news").to(device0)
+    model=BartForConditionalGeneration.from_pretrained("ainize/kobart-news").to(device0)
     
     if request.method == 'POST':
         text=request.form["text_input"]
@@ -661,25 +533,14 @@ def summary_result():
     result_value = request.args.get('result')
     filepathtosave = request.args.get('pdf_file_path')
     audio_file_path=request.args.get('audio_file_path')
-    
-    print(filepathtosave)
-    print("result 페이지 실행")
 
 
     if filepathtosave == None:
         filename=re.sub(r"[^\uAC00-\uD7A30-9a-zA-Z\s]", "d",result_value[:10])
         filename = filename+'.pdf'
         filepathtosave = os.path.join(DOWN_FOLDER,filename)
-        #pdf=canvas.Canvas(filepathtosave)
-        #pdf.drawString(50, 800, result_value)
-        #print(result_value)
-        #pdf.save()
-        #outputFile=filepathtosave
         
         filepathtosave=filepathtosave.replace('.pdf','.docx')
-        #doc = Document()
-        print(result_value)
-        #doc.add_paragraph(result_value)
 
         doc = docx.Document()
         para = doc.add_paragraph()
@@ -687,26 +548,16 @@ def summary_result():
         run.font.name = '맑은 고딕'
         run._element.rPr.rFonts.set(qn('w:eastAsia'), '맑은 고딕')
         doc.save(filepathtosave)
-        #convert(filepathtosave, outputFile)
-        print('업로드 완료')
+
         return render_template("Summary_result.html", result=result_value, audio_file_path=audio_file_path, pdf_file_path=filepathtosave, text_input=text_input)
-    else: 
-        #filepathtosave=os.path.join(UPLOAD_FOLDER,'result.pdf')
+    else:
         filepathtosave=filepathtosave.replace('.pdf','.docx')
-        print(filepathtosave)
-        #pdf=canvas.Canvas(filepathtosave)
-        #pdf.drawString(50, 800, result_value)
-        #print(result_value)
-        #pdf.save()
-        print(result_value)
         doc = docx.Document()
         para = doc.add_paragraph()
         run = para.add_run(result_value)
         run.font.name = '맑은 고딕'
         run._element.rPr.rFonts.set(qn('w:eastAsia'), '맑은 고딕')
         doc.save(filepathtosave)
-        #filepathtosave=filepathtosave+"_.docx"
-        print('업로드 완료')
         return render_template("Summary_result.html", result=result_value,audio_file_path=audio_file_path, pdf_file_path=filepathtosave, text_input=text_input)
     
 
@@ -775,69 +626,11 @@ def upload_file_translate():
             output_language = session.get('output_language')
             grammar_check = session.get('grammar_check')
             
-            # 입력 텍스트가 한글 또는 한글 점자이면
-            '''if input_language == 'kor' or input_language == 'korb':
-                if input_language == 'korb' :
-                    result = BrailleToKor().translation(result) # 한글 점자 번역
-                if grammar_check:
-                    result2=result
-                    result = grammar_test_ko(result) # 한글 맞춤법 검사
-                    change_list=grammar_test_ko(result2)[1:]
-                # 출력이 한글 점자이면
-                if output_language == 'korb':
-                    result = KorToBraille().korTranslate(result)
-                # 출력이 한글 문자이면
-                elif output_language == 'kor':
-                    print("음성 링크 반환")
-                    audio_file_path = tts_ko(result) # 음성 변환
-                # 출력이 영어 문자 or 영어 점자이면
-                else:
-                    result = translateLanguage(result, 'ko', 'en')
-                    if output_language == 'eng':
-                        audio_file_path = tts_en(result) # 음성 변환
-                    elif output_language == 'engb':
-                        result = louis.translateString(["braille-patterns.cti", "en-us-g2.ctb"], result)
-            # 입력 텍스트가 영어 문자 또는 영어 점자이면
-            else:
-                if input_language == 'engb':
-                    result =  louis.backTranslateString(["braille-patterns.cti", "en-us-g2.ctb"], result) # 영어 점자 번역
-                if grammar_check:
-                    result2=result
-                    result = grammar_test_en(result)[0] # 영어 맞춤법 검사
-                    change_list=grammar_test_en(result2)[1:]
-                # 출력이 영어 문자이면
-                if output_language == 'eng':
-                    audio_file_path = tts_en(result) # 음성 변환
-                # 출력이 영어 점자이면
-                elif output_language == 'engb':
-                    result = louis.translateString(["braille-patterns.cti", "en-us-g2.ctb"], result)
-                # 출력이 영어 문자 or 영어 점자이면
-                else:
-                    result = translateLanguage(result, 'ko', 'en')
-                    if output_language == 'en':
-                        audio_file_path = tts_en(result) # 음성 변환
-                    elif output_language == 'enb':
-                        result = louis.translateString(["braille-patterns.cti", "en-us-g2.ctb"], result)
-                    else:
-                        result = translateLanguage(result, 'en', 'ko') # 한글로 번역
-                        if output_language == 'kor':
-                            audio_file_path = tts_ko(result) # 음성 변환
-                        elif output_language == 'korb':
-                            result = KorToBraille().korTranslate(result)'''
-                            
-            #pdfmetrics.registerFont(TTFont("맑은고딕", url_for('static', filename='malgun.ttf')))
-            #pdf = canvas.Canvas(filepathtosave)
-            #pdf.setFont("맑은고딕", 15)
-            #pdf.drawString(50, 800, result)
-            #pdf.save()
-            
             filepathtosave=filepathtosave.replace('.pdf','.docx')
             doc = docx.Document()
             doc.add_paragraph(result)
             doc.save(filepathtosave)
-            #convert(filepathtosave, outputFile)       
-            print('업로드 완료')
-            
+
         #return redirect(url_for("result", result=result, total_result=result,compare_result=change_list,pdf_file_path=filepathtosave, audio_file_path=audio_file_path, input_language=input_language, output_language=output_language, text_input=text_input))
         return render_template('getInput.html',text_input=result)
     #return redirect(url_for("result", result=result, total_result=result,compare_result=change_list, pdf_file_path=filepathtosave, audio_file_path=audio_file_path, input_language=input_language, output_language=output_language, text_input=text_input))
