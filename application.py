@@ -12,7 +12,6 @@ import transformers
      
 from transformers import PreTrainedTokenizerFast, BartForConditionalGeneration
 
-device0 = torch.device("cuda:0" if torch.cuda.is_available() else 'cpu')
 
 #워드파일
 # 가장 기본적인 기능(문서 열기, 저장, 글자 쓰기 등등)
