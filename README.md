@@ -1,4 +1,4 @@
-# AI Braille English-Korean Translator
+# AI Braille English-Korean Translator, E-yes
 
 ## Project Period
 2023.4 ~ 2023.11
