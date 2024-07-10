@@ -21,7 +21,7 @@
 <br><br>
 
 ## Paper
-[Development of a Braille Translation and Document Summarization System for the Visually Impaired Education]
+[Development of a Braille Translation and Document Summarization System for the Visually Impaired Education](https://koreascience.kr/article/CFKO202333855044754.page)
 <br><br>
 
 ## Website Video
