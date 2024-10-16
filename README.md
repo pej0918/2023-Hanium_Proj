@@ -21,7 +21,7 @@ E-yes 는 사용자가 입력한 텍스트를 바탕으로 번역 및 문서 요
 - 교정문자 생성: 잘못 입력된 점자 및 문자를 인식하고 교정
 - 문서 요약 : KoBART 모델을 활용한 문서 요약
 
-![GIFMaker_me](https://github.com/user-attachments/assets/b82fc716-bece-4ab2-be97-f295df9dde91)
+<img src="https://github.com/user-attachments/assets/b82fc716-bece-4ab2-be97-f295df9dde91" width="500"/>
 
 
 ### Paper
