@@ -14,14 +14,14 @@ E-yes 는 사용자가 입력한 텍스트를 바탕으로 번역 및 문서 요
 시각장애인 대부분이 약시라는 사실에 기반하여 크고 명확한 UI, 반응형 디자인을 구현했다. 화면 페이지 수를 줄이고, 직관적인 기능, 명확한 작동방식을명시하는 것으로 사용자의 초기 앱 적응 비용을 최소화한다. 
 시각장애인은 휴대폰 키보드의 STT 기능을 이용하거나 소장하고 있는 문서 파일을 첨부하여 텍스트를 입력할 수 있다.
 
-#### Main Functions
+### Main Functions
 - 점자 번역/역번역: 점자 텍스트를 묵자로 번역 및 묵자를 점자로 역번역
 - 영어 ↔ 한글 번역: 영어 문장과 한글 문장간의 번역 변환
 - 음성 파일 생성: 한글 및 영어로 된 문장을 음성 파일로 생성
 - 교정문자 생성: 잘못 입력된 점자 및 문자를 인식하고 교정
 - 문서 요약 : KoBART 모델을 활용한 문서 요약
 
-<img src="https://github.com/user-attachments/assets/b82fc716-bece-4ab2-be97-f295df9dde91" width="500"/>
+<img src="https://github.com/user-attachments/assets/b82fc716-bece-4ab2-be97-f295df9dde91" width="600" height="500"/>
 
 
 ### Paper
