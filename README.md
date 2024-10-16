@@ -8,8 +8,8 @@
 시각장애인은 휴대폰 키보드의 STT 기능을 이용하거나 소장하고 있는 문서 파일을 첨부하여 텍스트를 입력할 수 있다.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2687ff6e-fac8-4e62-a705-5fbe0b972aa6" />
-  <img src="https://github.com/user-attachments/assets/0556451f-7212-4d3b-8e2f-abffebf4e7a5" />
+  <img src="https://github.com/user-attachments/assets/2687ff6e-fac8-4e62-a705-5fbe0b972aa6" width="500" />
+  <img src="https://github.com/user-attachments/assets/0556451f-7212-4d3b-8e2f-abffebf4e7a5" width="500"/>
 </p>
 <p align="center">
   <img src="https://github.com/user-attachments/assets/c48bdb1f-b4f7-4a6a-8865-7124393362bf" />
