@@ -11,16 +11,16 @@
 시각장애인은 휴대폰 키보드의 STT 기능을 이용하거나 소장하고 있는 문서 파일을 첨부하여 텍스트를 입력할 수 있다.
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2687ff6e-fac8-4e62-a705-5fbe0b972aa6" width="450" />
-  <img src="https://github.com/user-attachments/assets/0556451f-7212-4d3b-8e2f-abffebf4e7a5" width="450"/>
+  <img src="https://github.com/user-attachments/assets/2687ff6e-fac8-4e62-a705-5fbe0b972aa6" width="400" />
+  <img src="https://github.com/user-attachments/assets/0556451f-7212-4d3b-8e2f-abffebf4e7a5" width="400"/>
 </p>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/c48bdb1f-b4f7-4a6a-8865-7124393362bf" width="450"/>
-  <img src="https://github.com/user-attachments/assets/bf1d475c-0e83-43cc-b805-e7b1bd8f9c79" width="450"/>
+  <img src="https://github.com/user-attachments/assets/c48bdb1f-b4f7-4a6a-8865-7124393362bf" width="400"/>
+  <img src="https://github.com/user-attachments/assets/bf1d475c-0e83-43cc-b805-e7b1bd8f9c79" width="400"/>
 </p>
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/e3b147a5-0f57-4f13-9e4c-2eb3507df21c" width="450"/>
-  <img src="https://github.com/user-attachments/assets/0df804f5-38bc-49b6-9dea-8bf845eab46a" width="450"/>
+  <img src="https://github.com/user-attachments/assets/e3b147a5-0f57-4f13-9e4c-2eb3507df21c" width="400"/>
+  <img src="https://github.com/user-attachments/assets/0df804f5-38bc-49b6-9dea-8bf845eab46a" width="400"/>
 </p>
 
 
